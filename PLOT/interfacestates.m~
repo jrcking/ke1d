@@ -1,0 +1,44 @@
+% This script reads the input and output states to the interface Riemann
+% problem used in the rGFM. It then plots them in a nice 3 by 2 plot..
+% This script is independent of other scripts. It should be 
+% located within GODUNOV/PLOT/ and it looks for files within /GODUNOV/RUN/
+
+clear all
+
+iri = load("../RUN/intriemanninps.out");
+
+iro = load("../RUN/intriemannouts.out");
+
+figure(1)
+subplot(3,2,1),plot(iri(:,1),iri(:,2),'rx-',iri(:,1),iri(:,5),'bx-')
+title("INPUT STATES")
+legend("rho_{left}","rho_{right}")
+xlabel("time (seconds)")
+ylabel("density (kg/m^3)")
+
+subplot(3,2,2),plot(iro(:,1),iro(:,2),'rx-',iro(:,1),iro(:,3),'bx-')
+title("OUTPUT STATES")
+legend("rho_{left}","rho_{right}")
+xlabel("time (seconds)")
+ylabel("density (kg/m^3)")
+
+
+subplot(3,2,3),plot(iri(:,1),iri(:,3),'rx-',iri(:,1),iri(:,6),'bx-')
+legend("u_{left}","u_{right}")
+xlabel("time (seconds)")
+ylabel("velocity (m/s)")
+
+
+subplot(3,2,4),plot(iro(:,1),iro(:,4),'rx-')
+xlabel("time (seconds)")
+ylabel("velocity (m/s)")
+
+subplot(3,2,5),plot(iri(:,1),iri(:,4),'rx-',iri(:,1),iri(:,7),'bx-')
+legend("p_{left}","p_{right}")
+xlabel("time (seconds)")
+ylabel("pressure (N/m/m)")
+
+subplot(3,2,6),plot(iro(:,1),iro(:,5),'rx-')
+xlabel("time (seconds)")
+ylabel("pressure (N/m/m)")
+

@@ -1,0 +1,7 @@
+ntt = nt
+for i=1:ntt
+	nt = i
+	psod
+	b = num2str(i);
+	print ('-dpng',"%s.png",b);
+endfor

@@ -1,0 +1,51 @@
+% A script for plots for my investigations into PV**n=C
+clear all
+% LOAD THINGS:
+P_all = load("../RUN/Pbubble.out");
+R_all = load("../RUN/Rbubble.out");
+c_all = load("../RUN/cbubble.out");
+
+t=P_all(:,1);
+P=P_all(:,2);
+R=R_all(:,2);
+c = c_all(:,2);
+V=(4/3).*pi.*R.**3;
+
+% set gamma to 1.4
+g = 1.4;
+% find the initial constant, C1
+C1 = P(1)*V(1)**g;
+% find the variation of n with time...
+n = (log(C1).-log(P))./log(V);
+%
+% find the period of a wave in the bubble
+dT = 2.*R./c;
+%
+
+% PLOTTING TIME!
+figure(2)
+%
+subplot(3,1,1),plot(t,R,"linewidth",1.4)
+axis([0 0.12 0 0.5])
+xlabel("time (seconds")
+ylabel("bubble radius (metres")
+grid
+%
+subplot(3,1,2),semilogy(t,P,"linewidth",1.4)
+axis([0 0.12])
+xlabel("time (seconds)")
+ylabel("bubble pressure (Pa)")
+grid
+%
+subplot(3,1,3),plot(t,n,"linewidth",1.4)
+%axis([0 0.12 1.36 1.41])
+xlabel("time (seconds)")
+ylabel("n")
+title("variation of n in PV**n = Constant for values from new model")
+grid
+%
+print('-dpng',"PVn.png")
+%
+%
+%
+

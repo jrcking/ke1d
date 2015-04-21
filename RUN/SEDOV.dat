@@ -1,0 +1,19 @@
+# INITIAL DATA FOR SEDOV EXPLOSION PROBLEM #
+1.0				:rhoL
+0.0				:uL
+1e5				:pL
+1.4				:gammaL
+0.0				:PcL
+1.0				:rhoR
+0.0				:uR
+1e-6				:pR
+1.4				:gammaR
+0.0				:PcR
+0.01				:Rint
+
+
+
+
+
+
+

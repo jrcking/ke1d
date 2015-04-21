@@ -1,0 +1,16 @@
+# MAIN PARAMETER FILE. DIRECTS KE1D TO SPECIFIC INITIAL CONDS' #
+200						:nr
+200						:nrout
+50000						:nt
+200						:outfreq
+1.0						:Rd
+0.8						:CFL
+1						:soltype(1-Godunov,2-Muscl,5-WENO-Z)
+1						:inttype(1-euler,2-2nd order,3-3rd order tvd)
+3						:obtype(1-nr,2-dudt=0,3-nlaa)
+52						:intype(51=SOD,52=AG,53=UE,54=SEDOV)
+2.0						:coordsno(0.0-Ca,1.0-cy,2.0-po)
+
+
+
+

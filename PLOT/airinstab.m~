@@ -1,0 +1,96 @@
+%%
+clear rdot
+clear rdott
+clear rddot
+clear sprdot
+clear sprddot
+%calculate rdot and filter
+%
+rdot(1) = 0.0;
+ntot = nt*outf
+for i=2:nt
+	rdot(i) = (R(i)-R(i-1))/(t(i)-t(i-1));
+endfor
+%sprdot = fft(rdot);
+%for i=100:nt
+%sprdot(i) = 0.0;
+%endfor
+%rdot = ifft(sprdot);
+%
+%calculate rddot and filter
+%
+rddot(1) = 0.0;
+for i=2:nt
+	rddot(i) = (rdot(i)-rdot(i-1))/(t(i)-t(i-1));
+endfor
+%
+%sprddot = fft(rddot);
+%for i=100:nt
+%sprddot(i) = 0.0;
+%endfor
+%rddot = ifft(sprddot);
+%
+%%%%%%%%%%%%%%%
+% find the index of the interface
+asq = alpha.**2;
+[spare1 iint] = min(asq);
+%
+%
+for i=1:nr
+	for j=1:nt
+		udist(i,j) = u(i,j) - r(i,j)*u(iint(j),j)/r(iint(j),j);
+		%%% delete elements in the water!!!
+		if (r(i,j) >= r(iint(j),j))
+			udist(i,j) = 0.0;	
+		endif
+	endfor
+endfor
+%plot animation of disturbance...
+%for i=1:nt
+%	plot(r(1:iint(i),i),udist(1:iint(i),i))
+%	axis([0 max(r(max(iint),:)) -20 20]);
+%	pause (0.05)
+%endfor
+varud = sum(udist.**2)./iint;
+% filter varud
+varud2 = varud;
+m=4
+for i=5:795
+	varud2(i) = (1/(2*m+1))*sum(varud(i-m:i+m));
+endfor
+m=9
+for i=10:790
+	varud2(i) = (1/(2*m+1))*sum(varud(i-m:i+m));
+endfor
+m=15
+for i=16:785
+	varud2(i) = (1/(2*m+1))*sum(varud(i-m:i+m));
+endfor
+%
+% plot
+%
+figure(1)
+subplot(4,1,1),semilogy(t,varud,'b',t(5:nt-5),varud2(5:nt-5),'r',"linewidth",1.5)
+xlabel("time (seconds)")
+ylabel("var(U_{dist})")
+legend("un-smoothed","smoothed (moving average)","location","northeast")
+axis([0 max(t) 0 1]); axis "autoy";
+grid
+subplot(4,1,2),plot(t,R)
+xlabel("time (seconds)")
+ylabel("R_{int} (metres)")
+axis([0 max(t) 0 1]); axis "autoy";
+grid
+subplot(4,1,3),plot(t,rdot)
+xlabel("time (seconds)")
+ylabel("dR_{int}/dt (m/s)")
+axis([0 max(t) 0 1]); axis "autoy";
+grid
+subplot(4,1,4),plot(t,rddot)
+xlabel("time (seconds)")
+ylabel("d^{2}R_{int}/dt^{2} (m/s/s)")
+axis([0 max(t) 0 1]); axis "autoy";
+grid
+print ("-dpng","internal_disturbances.png");
+
+

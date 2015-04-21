@@ -1,0 +1,69 @@
+% Script to use the scheme in Ziolkowski 1998 to estimate the 
+% pressure and velocity outside the bubble.
+%
+% Script SHOULD be independent of other scripts, (except AMZ1998_1)
+
+%
+% Boundary index = nrA
+% Boundary location = r(nrA,:) = r(nrA,1)
+% time varying boundary pressure = PA(nrA,:)
+% time varying boundary velocity = uA(nrA,:)
+% tA(i) = time of index i in PA(nrA,i) 
+% speed of sound in water = c = 1449.4m/s <--- based on Tammann EoS
+% "hydrostatic" pressure = PinfA
+% undisturbed water density = rhoA(nrA,1)
+% time varying boundary enthalpy = hb(:)
+c = 1449.4
+
+%
+% Need to calculate wavefunction and derivative at node at 3m
+bloc = 3
+%
+%
+hb = (PA(bloc,:) .- PinfA)./rhoA(nrA,1);
+for i=1:ntA
+f(i) = (rA(bloc,1)**2) * ( uA(bloc,i) - (hb(i)/c) -  0.5*(uA(bloc,i)**2)/c );
+fdash(i) = rA(bloc,1)*( hb(i) +  0.5*uA(bloc,i)**2 );
+endfor
+%
+% location varying velocity due to approximation = uAMZ(:)
+% location varying pressure due to approximation = pAMZ(:)
+%
+% Create an array for rAMZ(:) to plot with uAMZ,pAMZ
+dtau=0
+for i=1:ntA
+% change this for a different time --- 
+% currently at tA(ntA-7)
+rAMZ(i) = rA(bloc,1) + (tA(ntA-dtau)-tA(i))*c;
+endfor
+%
+for i=1:ntA
+uAMZ(i) = (1/rAMZ(i)**2)*f(i) + (1/(rAMZ(i)*c))*fdash(i);
+pAMZ(i) = (((1/rAMZ(i))*fdash(i) - 0.5*uAMZ(i)**2)*rhoA(nrA,1)+PinfA)/PinfA;
+endfor
+figure(1)
+%subplot(2,1,1),plot(rAMZ,pAMZ,'r',"linewidth",2)
+%subplot(2,1,1),
+dtauLD = 0
+plot(rAMZ(1:ntA-dtau),pAMZ(1:ntA-dtau),'r',"linewidth",2,rA(:,ntA-dtauLD),PovPinfA(:,ntA-dtauLD),'b',"linewidth",2)
+trm = tA(ntA-dtau);
+trmLD = tA(ntA-dtauLD);
+vrb = sprintf("Wavefields calculated using Euler eqns and NLAA, sound speed = %em/s, NLAA calculated from properties at r/R_{0}=%f",c,rA(bloc,1)/T_all(1,2));
+title (vrb)
+xlabel("Radius (metres)")
+ylabel("normalised Pressure")
+legend("NLAA","large domain","location","southeast")
+%axis([0 r(nr,1) 0.95 1.05])
+%subplot(2,1,2),plot(rAMZ,uAMZ,'r',"linewidth",2,r(:,nt),u(:,nt),'b',"linewidth",2)
+%xlabel("Radius (metres)")
+%ylabel("Velocity (m/s)")
+%axis([0 r(nr,1) -0.2 0.2])
+%legend("small domain, Ziolkowski 1998 approximation","large domain","location","southeast")
+
+print ("-dpng","farfield_comparison.png")
+
+
+
+
+
+

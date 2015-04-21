@@ -1,0 +1,182 @@
+% A script to find the exact solution to a Riemann problem.
+clear rhog
+clear ug
+clear pg
+% initial data
+rhol=1;
+ul=0;
+pl=1;
+gl=1.4;
+pcl=0;
+
+rhor=0.125;
+ur=0;
+pr=0.1;
+gr=1.6667;
+pcr=0.0;
+
+rhol=1;ul=0.1;pl=1;gl=1.4;pcl=0;
+rhor=1;ur=-0;pr=1;gr=1.4;pcr=0;
+tim=0.2
+%tim = t(nt)-t(1);
+x0 = 0.5;
+
+%
+cl = sqrt(gl*(pl+pcl)/rhol);
+cr = sqrt(gr*(pr+pcr)/rhor);
+
+plbar = pl + pcl;
+prbar = pr + pcr;
+taur = (gl + 1.0)/(2.0*gl);
+taur = (gr + 1.0)/(2.0*gr);
+
+pstar = 0.5*(pl+pr) + 0.5*(ur-ul)*0.5*(rhol+rhor)*0.5*(cl+cr);
+p_error = 1.0;
+
+while (p_error >= 1e-6)
+pstarOLD = pstar;
+if (pl >= pr)
+% right shock, left expansion
+ak = 2/((1+gr)*rhor);
+bk = prbar*(gr-1)/(gr+1);
+fr = (pstar-pr)*sqrt(ak/(pstar+pcr+bk));
+dfr=(pstar-pr)*(-0.5*sqrt(ak/(pstar+pcr+bk))*ak/((pstar+pcr+bk)**2)) + sqrt(ak/(pstar+pcr+bk));
+fl = (2*cl/(gl-1))*(((pstar+pcl)/plbar)**(0.5*(gl-1)/gl) -1);
+dfl = (2*cl/(gl-1))*(0.5*(gl-1)/gl)*(1/plbar)*((pstar+pcl)/plbar)**(-0.5*(gl-1)/gl);
+rholstar = rhol*((pstar+pcl)/plbar)**(1/gl);
+rhorstar = rhor*((((pstar+pcr)/prbar)+((gr-1)/(gr+1)))/(((pstar+pcr)/prbar)*((gr-1)/(gr+1))+1));
+qk = sqrt(rhor*rhorstar*((pstar-pr)/(rhorstar-rhor)));
+
+else
+%left shock, right expansion
+ak = 2/((1+gl)*rhol);
+bk = plbar*(gl-1)/(gl+1);
+fl = (pstar-pl)*sqrt(ak/(pstar+pcl+bk));
+dfl=(pstar-pl)*(-0.5*sqrt(ak/(pstar+pcl+bk))*ak/((pstar+pcl+bk)**2)) + sqrt(ak/(pstar+pcl+bk));
+fr = (2*cr/(gr-1))*(((pstar+pcr)/plbar)**(0.5*(gr-1)/gr) -1);
+dfr = (2*cr/(gr-1))*(0.5*(gr-1)/gr)*(1/plbar)*((pstar+pcr)/plbar)**(-0.5*(gr-1)/gr);
+rhorstar = rhor*((pstar+pcr)/prbar)**(1/gr);
+rholstar = rhol*((((pstar+pcl)/plbar)+((gl-1)/(gl+1)))/(((pstar+pcl)/plbar)*((gl-1)/(gl+1))+1));
+qk = sqrt(rhol*rholstar*((pstar-pl)/(rholstar-rhol)));
+endif
+f = fl+fr + ur-ul;
+df = dfl+dfr;
+pstar = pstarOLD +f/df;
+
+p_error = abs(pstar-pstarOLD)/(0.5*(pstar+pstarOLD));
+
+endwhile
+ustar = 0.5*(ul+ur) + 0.5*(fr-fl)
+pstar
+rholstar
+rhorstar
+clstar = sqrt(gl*(pstar+pcl)/rholstar);
+crstar = sqrt(gr*(pstar+pcr)/rhorstar);
+%
+% now we'll create a vector of x and find x/t
+x = -0.5:0.001:0.5;
+xovt = x./tim;
+%
+if (pl>=pr)
+% right shock
+sr = ur+qk/rhor;
+for i=1:length(x)
+	if (xovt(i) <=ul-cl) 
+		% solution is UL
+		rhog(i) = rhol;
+		ug(i) = ul;
+		pg(i) = pl;
+		eg(i) = (pg(i)+gl*pcl)/(gl-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ul-cl && xovt(i)<=ustar-clstar) 
+		% solution in left wave
+		ug(i) = (2/(gl+1))*(cl+0.5*ul*(gl-1)+xovt(i));
+		aa = ug(i) - xovt(i);
+		pg(i) = plbar*(aa/cl)**(2*gl/(gl-1)) - pcl;
+		rhog(i) = rhol*(aa/cl)**(2/(gl-1));
+		eg(i) = (pg(i)+gl*pcl)/(gl-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ustar-clstar && xovt(i)<=ustar)
+		% solution is ULstar
+		rhog(i) = rholstar;
+		ug(i) = ustar;
+		pg(i) = pstar;
+		eg(i) = (pg(i)+gl*pcl)/(gl-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ustar && xovt(i)<=sr)
+		%solution is URstar
+		rhog(i) = rhorstar;
+		ug(i) = ustar;
+		pg(i) = pstar;
+		eg(i) = (pg(i)+gr*pcr)/(gr-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=sr)
+		% solution is UR
+		rhog(i) = rhor;
+		ug(i) = ur;
+		pg(i) = pr;
+		eg(i) = (pg(i)+gr*pcr)/(gr-1.0) + 0.5*rhog(i)*ug(i)**2;
+	endif
+endfor
+elseif(pl<=pr)
+%left shock
+sl=ul-qk/rhol;
+for i=1:length(x)
+	if (xovt(i) <=sl) 
+		% solution is UL
+		rhog(i) = rhol;
+		ug(i) = ul;
+		pg(i) = pl;
+		eg(i) = (pg(i)+gl*pcl)/(gl-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=sl && xovt(i)<=ustar)
+		% solution is ULstar
+		rhog(i) = rholstar;
+		ug(i) = ustar;
+		pg(i) = pstar;
+		eg(i) = (pg(i)+gl*pcl)/(gl-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ustar && xovt(i)<=ustar+crstar)
+		%solution is URstar
+		rhog(i) = rhorstar;
+		ug(i) = ustar;
+		pg(i) = pstar;
+		eg(i) = (pg(i)+gr*pcr)/(gr-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ustar+crstar && xovt(i)<=ur+cr)
+		% solution in right wave
+		ug(i) = (2/(gr-1))*(-1.0*cr+0.5*ur*(gr-1) +xovt(i));
+		aa = xovt(i)-ug(i);
+		pg(i) = prbar*(aa/cr)**(2*gr/(gr-1)) -pcr;
+		rhog(i) = rhor*(aa/cr)**(2/(gr-1));
+		eg(i) = (pg(i)+gr*pcr)/(gr-1.0) + 0.5*rhog(i)*ug(i)**2;
+	elseif (xovt(i) >=ur+cr)
+		% solution is UR
+		rhog(i) = rhor;
+		ug(i) = ur;
+		pg(i) = pr;
+		eg(i) = (pg(i)+gr*pcr)/(gr-1.0) + 0.5*rhog(i)*ug(i)**2;
+	endif
+endfor
+
+
+
+
+endif
+x = x.+x0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

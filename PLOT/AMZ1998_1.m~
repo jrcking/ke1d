@@ -1,0 +1,42 @@
+% Script to use the scheme in Ziolkowski 1998 to estimate the 
+% pressure and velocity outside the bubble.
+%
+% Script SHOULD be independent of other scripts...
+clear all
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+RHO_all = load("../RUN/BIGRUN/rho.out");
+U_all = load("../RUN/BIGRUN/u.out");
+P_all = load("../RUN/BIGRUN/P.out");
+% #######################################################
+% Read some of the parameters from init.params
+nrA = 500
+outfA = 100
+% #######################################################
+total = size(RHO_all)
+ntA = total(1)/nrA
+%
+%
+for j=1:ntA
+	for i=1:nrA
+		rA(i,j) = RHO_all(nrA*(j-1) + i,1);
+		rhoA(i,j) = RHO_all(nrA*(j-1) + i,2);
+		uA(i,j) = U_all(nrA*(j-1) + i,2);
+		PA(i,j) = P_all(nrA*(j-1) + i,2);
+%
+	endfor
+endfor
+PinfA = PA(nrA,1);
+T_all = load("../RUN/BIGRUN/Rbubble.out");
+for i=1:ntA
+	tA(i) = T_all(outfA*(i),1);
+endfor
+PovPinfA = PA./PinfA;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+

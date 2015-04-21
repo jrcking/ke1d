@@ -1,0 +1,17 @@
+% Hello this script will load fort.61 and fort.62
+% to give us the fluxes passing through the interface
+% which should or shouldn't(!) be there...
+
+
+fl1=load('../RUN/GBC1.out');
+fl2=load('../RUN/GBC2.out');
+
+t = fl1(:,1);
+
+fl1m = fl1(:,2);
+fl1mm = fl1(:,3);
+fl1e = fl1(:,4);
+
+fl2m = fl2(:,2);
+fl2mm = fl2(:,3);
+fl2e = fl2(:,4);

@@ -1,0 +1,67 @@
+% script to create some nice plots from the data
+% script to be run after indata has been called
+%
+%
+figure(1)
+subplot(2,1,1),
+%plot the pressure at a radius of 1 metre
+plot(T,Pb_all(:,2)./Pinf,'r',"linewidth",2)
+xlabel("time (seconds)")
+ylabel("normalised pressure at 1 metre")
+axis([0 max(t) -1 max(Pb_all(:,2)./Pinf)+1])
+%
+subplot(2,1,2),
+%plot the bubble radius
+plot(T,Radiuss,'b',"linewidth",2)
+xlabel("time (seconds)")
+ylabel("normalised bubble radius")
+axis([0 max(t) 0 1.2])
+print ("-dsvg","P_R_t.svg")
+
+%
+figure(2)
+subplot(2,1,1),
+plot(tpo,Pold,'r',"linewidth",2)
+xlabel("time (seconds)")
+ylabel("normalised pressure at 1 metre")
+axis([0 max(t) 0 max(PovPinf(nr,:))+1])
+%
+subplot(2,1,2),
+plot(tro,Rold,'b',"linewidth",2)
+xlabel("time (seconds)")
+ylabel("normalised bubble radius")
+axis([0 max(t) 0 1.2])
+print ("-dsvg","P_R_t_OLD.svg")
+%
+%plot the initial fields
+figure(3)
+plot (r(:,1),PovPinf(:,1),'r',"linewidth",2,r(:,1),rhonorm(:,1),'b',r(:,1),gam(:,1),'g')
+axis ([r(1,1) r(nr,1) 0 max(PovPinf(1,1),PovPinf(nr,1))+1]);
+xlabel ("Radius (m)")
+legend ("normalised pressure","normalised density","gamma","northeast")
+title("initial conditions")
+print ("-dsvg","initial_conditions.svg")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

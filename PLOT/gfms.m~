@@ -1,0 +1,59 @@
+clear all
+
+I1=load('../RUN/intriemanninps.old' );
+O1=load('../RUN/intriemannouts.old' );
+I2=load('../RUN/intriemanninps.out' );
+O2=load('../RUN/intriemannouts.out' );
+t1=I1(:,1);
+t2=I2(:,1);
+
+I1rhoL=I1(:,2);
+I1uL=I1(:,3);
+I1pL=I1(:,4);
+I1rhoR=I1(:,5);
+I1uR=I1(:,6);
+I1pR=I1(:,7);
+
+O1rhoL=O1(:,2);
+O1rhoR=O1(:,3);
+O1u=O1(:,4);
+O1p=O1(:,5);
+
+I2rhoL=I2(:,2);
+I2uL=I2(:,3);
+I2pL=I2(:,4);
+I2rhoR=I2(:,5);
+I2uR=I2(:,6);
+I2pR=I2(:,7);
+
+O2rhoL=O2(:,2);
+O2rhoR=O2(:,3);
+O2u=O2(:,4);
+O2p=O2(:,5);
+
+%%%%%%%
+% interface fluxes! %%
+
+f11=load('../RUN/fort.61o');
+f21=load('../RUN/fort.62o');
+f12=load('../RUN/fort.61');
+f22=load('../RUN/fort.62');
+
+g1fl1M = f11(:,2);
+g1fl1MM = f11(:,3);
+g1fl1E = f11(:,4);
+
+g1fl2M = f21(:,2);
+g1fl2MM = f21(:,3);
+g1fl2E = f21(:,4);
+
+g2fl1M = f12(:,2);
+g2fl1MM = f12(:,3);
+g2fl1E = f12(:,4);
+
+g2fl1M = f22(:,2);
+g2fl1MM = f22(:,3);
+g2fl1E = f22(:,4);
+
+ 
+

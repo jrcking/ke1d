@@ -1,0 +1,82 @@
+% script to be run after indata to calculate errors
+% from data stored in a far field run...
+clear all
+A = load("../RUN/BUBBLEERRORS/errors600.out");
+tE=A(:,1);
+erhodt = abs(A(:,2).-A(:,5))./abs(A(:,5));
+epdt = abs(A(:,3).-A(:,6))./abs(A(:,6));
+eudt = abs(A(:,4).-A(:,7))./abs(A(:,7));
+nttot = length(tE)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+RHO_all = load("../RUN/BUBBLEERRORS/rho.out");
+U_all = load("../RUN/BUBBLEERRORS/u.out");
+P_all = load("../RUN/BUBBLEERRORS/P.out");
+%
+nr = 250
+outf = 100
+total = size(RHO_all)
+nt = total(1)/nr
+for j=1:nt
+	for i=1:nr
+		r(i,j) = RHO_all(nr*(j-1) + i,1);
+		rho(i,j) = RHO_all(nr*(j-1) + i,2);
+		u(i,j) = U_all(nr*(j-1) + i,2);
+		P(i,j) = P_all(nr*(j-1) + i,2);
+	endfor
+endfor
+for i=1:nt
+	t(i) = tE(outf*(i-1)+1);
+endfor
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FIND rho,p,u (integrate the d/dt's)
+rhoA(1) = rho(4,1);
+pA(1) = P(4,1);
+uA(1) = u(4,1);
+rhoEX(1) = rho(4,1);
+pEX(1) = P(4,1);
+uEX(1) = u(4,1);
+for i=2:nttot
+dt = tE(i) - tE(i-1);
+rhoA(i) = rhoEX(i-1) + dt*A(i,2);
+pA(i) = pEX(i-1) + dt*A(i,3);
+uA(i) = uEX(i-1) + dt*A(i,4);
+rhoEX(i) = rhoEX(i-1) + dt*A(i,5);
+pEX(i) = pEX(i-1) + dt*A(i,6);
+uEX(i) = uEX(i-1) + dt*A(i,7);
+endfor
+erho = abs(rhoA.-rhoEX)./abs(rhoEX);
+ep = abs(pA.-pEX)./abs(pEX);
+eu = abs(uA.-uEX)./abs(uEX);
+
+interho(1) = 0.0
+intep(1) = 0.0
+inteu(1) = 0.0
+for i=2,nttot
+dt = tE(i) - tE(i-1);
+interho(i) = interho(i-1) + dt*erho(i);
+intep(i) = intep(i-1) + dt*ep(i);
+inteu(i) = inteu(i-1) + dt*eu(i);
+endfor
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure(1)
+subplot(2,1,1),
+semilogy(tE,erho,tE,ep,tE,eu)
+legend("density error","pressure error","velocity error")
+title("Errors introduced by NLAA BCs in time derivatives at r/R_{0}=10")
+xlabel("time (seconds)")
+ylabel("relative error")
+axis([0 max(t) 0 1]); axis "autoy"; 
+grid
+subplot(2,1,2),
+plot(t,10000.*(rho(4,1:length(t)).-rho(4,1))./rho(4,1),t,(P(4,1:length(t)).-P(4,1))./P(4,1),t,u(4,1:length(t))./max(u(4,:)))
+legend("normalised density variation","normalised pressure variation","normalised velocity")
+axis([0 max(t) 0 1]); axis "autoy"; 
+xlabel("time (seconds)")
+grid

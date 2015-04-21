@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Script to compile the code and perform any associated housekeeping
+#
+
+rm ./RUN/*.out
+rm ./RUN/KE1D
+rm ./RUN/final*
+
+#
+gfortran ./SOURCE/*.f -o KE1D
+
+mv KE1D ./RUN/.

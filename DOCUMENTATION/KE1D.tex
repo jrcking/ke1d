@@ -1,0 +1,125 @@
+\documentclass{article}
+\begin{document}
+\title{KE1D}
+\author{J. R. C. King}
+\maketitle
+\begin{abstract}
+This document contains an outline of how to run KE1D
+\end{abstract}
+
+
+\section{File structure}
+KE1D.tar contains four folders: SOURCE, RUN, PLOT and DOCUMENTATION, and three files: EDITCODE, COMPILECODE, RUNCODE.
+
+\subsection{SOURCE}
+The folder SOURCE contains the following files
+\begin{itemize}
+\item \textbf{BOUNDLEFT.f} - Applies reflective boundary conditions at the left hand domain boundary. 
+\item \textbf{BOUNDRIGHT.f} - Applies the desired boundary condition at the right hand boundary.
+\item \textbf{EVOLVE.f} - Single phase Euler solving subroutine.
+\item \textbf{FLUXES.f} - Calculates the fluxes by solving some Riemann problems.
+\item \textbf{PROGRESS.f} - Prints the progress of the code to terminal.
+\item \textbf{SLOPELIMITER.f} - Slope limiter for use with the MUSCL scheme.
+\item \textbf{BOUNDNODE.f} - Applies boundary conditions to the right hand domain boundary.
+\item \textbf{FINDINTERFACE.f} - Numerically finds the location of the zero level set.
+\item \textbf{RIEMANNHLLC.f} - Solves a single phase Riemann problem to provide HLLC fluxes.
+\item \textbf{WENOZ.f} - Weighted essentially non-oscillatory reconstruction.
+\item \textbf{commonblock} - Declarations of all common variables.
+\item \textbf{KINGEULER1D.f} - The main program.
+\item \textbf{SETTSTEP.f} - Sets the time step based on the CFL condition.
+\item \textbf{SPLITFIELDS.f} - Creates two single-fluid domains for the GFM.
+\item \textbf{RECOMBINE.f} - Recombines the two single-fluid domains according to the sign of the level set.
+\item \textbf{RECONSTRUCT.f} - Reconstructs the solution in each cell - piecewise constant, linear, parabolic, etc.
+\item \textbf{DUMPRESULTS.f} - Outputs data when required.
+\item \textbf{LEVELSET.f} - Updates the level set.       
+\item \textbf{SETUP.f} - Sets up initial conditions.
+\end{itemize}
+
+All the source files are fairly thoroughly commented.
+
+\subsection{RUN}
+The folder RUN contains the following
+\begin{itemize}
+\item \textbf{KE1D} - the executable.
+\item \textbf{init.params} - the main parameter file/
+\item \textbf{SOD.dat} - initial conditions for a Sod shock tube problem.
+\item \textbf{AG.dat} - initial conditions for an air gun bubble.
+\item \textbf{UE.dat} - initial conditions for an underwater explosion.
+\item \textbf{SEDOV.dat} - initial conditions for a Sedov explosion problem.
+\end{itemize}
+When KE1D is run, all output files (with the extension .out) will be created in the folder RUN.
+
+\subsection{PLOT}
+The folder PLOT contains some Octave scripts to load and plot the data.
+\begin{itemize}
+\item \textbf{indata.m} - this will load all the data, provided 'nr' and 'outf' are set to match the values in init.params.
+\item \textbf{pdata.m} - this will plot an animation of the results.
+\item \textbf{psod.m} - this will plot the spatial profiles of density, velocity, energy and pressure at the time index 'tn'.
+\end{itemize}
+
+These scripts are a bit messy...
+
+\subsection{DOCUMENTATION}
+The folder documentation contains this document and the Latex source files.
+
+\section{Output format}
+
+All output files are written in ASCII in double precision, which is probably quite extravagant. There are two types of output file: parameters and arrays. The parameters are properties such as bubble radius or time step value. The arrays are spatially and temporally varying properties such as density or pressure. Parameters are output \textit{every} time step. Arrays are output every outfreq timesteps. The following is a list of all the output files and a description of the contents of each column.
+\begin{itemize}
+\item \textbf{dt.out} - time, time step value
+\item \textbf{pbound.out} - time, pressure at domain boundary
+\item \textbf{pint.out} - time, interface pressure
+\item \textbf{interface.out} - time, interface position
+\item \textbf{rhobound.out} - time, density at domain boundary
+\item \textbf{ubound.out} - time, velocity at domain boundary
+\item \textbf{A.out} - radius, level set
+\item \textbf{E.out} - radius, energy
+\item \textbf{gamma.out} - radius, gamma
+\item \textbf{Pc.out} - radius, stiffening of EoS
+\item \textbf{P.out} - radius, pressure
+\item \textbf{rho.out} - radius, density
+\item \textbf{u.out} - radius, velocity
+\end{itemize}
+		
+The final 7 files repeat for every time data is outputted. So, for a domain of 200 cells outputting every 10 time steps, the first 200 lines of rho.out are
+the density profile at the start, the next 200 lines are the density profile at the 10th time step, etc...
+
+The files with 2 columns and time in the first column can just be plotted with gnuplot. pint.out and interface.out for example.
+
+\section{Parameters}
+
+Parameters: here's what you can change in init.params.
+\begin{itemize}
+\item \textbf{nr} - number of cells for calculation
+\item \textbf{nrout} - number of cells for outputs
+\item \textbf{nt} - number of time steps
+\item \textbf{outfreq} - output fields every outfreq timesteps
+\item \textbf{Rd} - domain size
+\item \textbf{CFL} - courant condition
+\item \textbf{soltype} - order of spatial reconstruction for Euler solver. 1=GODUNOV, 2=MUSCL, 3=WENO-Z
+\item \textbf{inttype} - order of time integration. 1=Euler,2=2nd order TVD,3=3rd order TVD
+\item \textbf{obtype} - type of boundary condition applied at Rd. 1=`non-reflecting', 2=dudt=0, 3=NLAA
+\item \textbf{intype} - type of problem to solve. 51=SOD, 52=AG, 53=UE, 54=SEDOV. UE refers to an underwater explosion problem. If you run the underwater explosion problem with too fine a resolution you'll need to do some horrible bodge at the origin boundary to avoid NaN.
+\item \textbf{coordsno} - the coordinate system - 0=Cartesian, 1=cylindrical, 2=spherical.
+\end{itemize}
+
+The .dat files just contain a list of left and right properties plus the initial interface location for each problem.
+
+\section{How to run}
+In the folder KE1D there are three files:
+
+\begin{itemize}
+\item \textbf{./EDITCODE} will open all the source files, paramater files and Octave scripts in gedit.
+\item \textbf{./COMPILECODE} will delete output files and executable from RUN, compile the code with gfortran, and put the new executable 'KE1D' into the folder RUN
+\item \textbf{./RUNCODE} will run the code!
+\end{itemize}
+
+As you receive the code, it will run an air gun bubble simulation on a 1metre domain with 200 cells for 5e4 time steps - about 2 oscillations. Spatial reconstruction is 1st order, as is time integration. Higher-order integration causes problems anyway
+
+The simulation is very roughly (with some artistic license in applying a reduction factor to the initial pressure) equivalent to a 250cu.in.
+air gun at 2000psi in 7.7m of water.
+
+\end{document}
+
+
+

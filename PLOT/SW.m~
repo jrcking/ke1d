@@ -1,0 +1,33 @@
+%
+% Script to find conditions for either side of a shock
+% given the right state, the left pressure and the EoS
+% inputs: pL,pR,roR,uR,gam,pc
+%
+pL = 8e5;
+pR = 1.0e5;
+roR = 1.0e3;
+uR = 0.0;
+
+gam = 7.0;
+pc = 3.0e8;
+
+gm1ovgp1 = (gam-1)/(gam+1);
+
+roL = roR* ( ( (pL+pc)/(pR+pc) + gm1ovgp1 )/ ( ( (pL+pc)/(pR+pc) )*(gm1ovgp1)+1 ) );
+
+b = (pR+pc)*gm1ovgp1;
+a=2.0/(roR*(gam+1));
+Q = sqrt((pL+pc+b)/a);
+wL=-1.0*Q/roL;
+ss = uR+Q/roR;
+uL = wL+ss;
+
+ML = uL/sqrt(gam*(pL+pc)/roL)
+
+roL
+uL
+pL
+roR
+uR
+pR
+

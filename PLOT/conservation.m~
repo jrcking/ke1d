@@ -1,0 +1,5 @@
+clear all
+A = load("../RUN/Mair.out");
+W = load("../RUN/Mwater.out");
+plot(A(:,1),(A(:,2).-A(1,2))./A(1,2),W(:,1),(W(:,2).-W(1,2))./W(1,2))
+

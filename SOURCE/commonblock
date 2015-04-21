@@ -1,0 +1,65 @@
+C	---------------------------------------------------------------
+c	THIS FILE DEFINES ALL COMMON VARIABLES.
+	PARAMETER (nrmax = 100002, ntmax = 1000002, npmax = 10)
+C
+C	GRID
+	INTEGER nr,nrout
+	DOUBLE PRECISION	Rd,r(nrmax),dr
+	COMMON	/ grid /
+     +		Rd,r,dr,nr,nrout
+C	FLAGS_ETC
+	INTEGER outfreq,ofc1,soltype,inttype,ghost
+	COMMON	/ flags_etc /
+     +		outfreq,ofc1,soltype,inttype,ghost
+C	A MASK!
+	LOGICAL		 pmask(nrmax)
+	COMMON	/ a_mask /
+     +		pmask
+C	COORDINATES
+	DOUBLE PRECISION coordsno
+	COMMON	/ coordinates /
+     +		coordsno
+C	TIME
+	DOUBLE PRECISION	dt,t,CFL,sfrac(3,3)
+	INTEGER tn,nt,kt
+	COMMON	/ time /
+     +		dt,t,CFL,sfrac,tn,nt,kt
+C	INITIAL FIELD
+	DOUBLE PRECISION	u0,rho0,rho1,gamma0,gamma1,Pc0,Pc1
+	DOUBLE PRECISION	p0,p1
+	INTEGER	intype
+	COMMON	/ initial_properties /
+     +		u0,rho0,rho1,gamma0,gamma1,Pc0,Pc1,p0,p1,intype
+C	BOUNDARY
+	DOUBLE PRECISION	Pinf
+	INTEGER			obtype
+	COMMON	/ boundary /
+     +		Pinf,obtype
+C	INTERFACE
+	DOUBLE PRECISION	Rint,RintOLD,fPint
+	DOUBLE PRECISION	PI,UI,rhoLI,rhoRI,SL,SR
+	INTEGER			q,qOLD
+	COMMON	/ the_interface /
+     +		Rint,RintOLD,fPint,PI,UI,rhoLI,rhoRI,SL,SR,q,qOLD
+C	PROPERTIES
+	DOUBLE PRECISION	rho(nrmax),u(nrmax),P(nrmax),
+     +		gamm(nrmax),Pc(nrmax),E(nrmax),alpha(nrmax)
+	COMMON	/ flow_properties /
+     +		rho, u, P,gamm,Pc,E,alpha
+C	DIFFERENT MEDIUM INC. GHOST STATES & ALSO MUSCL OUTPUT
+	DOUBLE PRECISION	m0(2,npmax,nrmax),m1(2,npmax,nrmax)
+	DOUBLE PRECISION	gm(2),pcr(2)
+	INTEGER			gfmbuffer,rLOW(2),rHIGH(2)
+	COMMON	/ mediums /
+     +		m0,m1,gm,pcr,gfmbuffer,rLOW,rHIGH
+C	FLUXES
+	DOUBLE PRECISION 	fiph(3,nrmax)
+	COMMON	/ the_fluxes /
+     +		fiph
+C	LEFT AND RIGHT STATES
+	DOUBLE PRECISION	Uiph(npmax,nrmax),Uimh(npmax,nrmax)
+	COMMON	/ left_right_states /
+     +		Uiph,Uimh
+C	
+	PARAMETER (pie=3.14159)
+C	---------------------------------------------------------------
